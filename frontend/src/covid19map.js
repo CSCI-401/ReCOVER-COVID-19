@@ -226,10 +226,7 @@ class Covid19Map extends Component {
   initCases() {
     //this.setState({ worldCases: this.state.caseData });
 
-
-
-
-
+    console.log(this.state);
     if (this.state.markers.length > 0) {
       this.setCases();
     } else {
@@ -253,7 +250,7 @@ class Covid19Map extends Component {
         if (i <183) {
             var compare = this.state.areasList[i].country+" ";
              if ("US " === compare){
-                    this.state.us.push({
+                  this.state.us.push({
                   key: area.name,
                   caseKey: area.name + "-cases",
                   deathKey: area.name + "-deaths",
@@ -291,9 +288,9 @@ class Covid19Map extends Component {
         } else {
             this.state.stateMarkers.push({
                   key: area.name,
-                  caseKey: area.name + "-cases",
-                  deathKey: area.name + "-deaths",
-                  data: area.name,
+                  caseKey: area.state + "-cases",
+                  deathKey: area.state + "-deaths",
+                  data: area.state,
                   center: [global_lat_long[i][1], global_lat_long[i][2]],
                   caseRadius: 5 * this.getRadius(area.valueTrue),
                   deathRadius: area.deathRadius,
@@ -376,9 +373,9 @@ class Covid19Map extends Component {
         } else {
             this.state.stateMarkers.push({
               key: area.name,
-              caseKey: area.name + "-cases",
-              deathKey: area.name + "-deaths",
-              data: area.name,
+              caseKey: area.state + "-cases",
+              deathKey: area.state + "-deaths",
+              data: area.state,
               center: [global_lat_long[i][1], global_lat_long[i][2]],
               caseRadius: area.caseRadius,
               deathRadius: this.getRadius(area.valueTrue),
@@ -551,16 +548,16 @@ class Covid19Map extends Component {
       <Covid19MarkerList markers={this.state.markers} />
 
         <LayersControl position='topright'>
-           <LayersControl.Overlay checked name="Hide US general">
+           <LayersControl.BaseLayer checked name="Hide US general">
                 <LayerGroup>
                   {this.renderFirst()}
                 </LayerGroup>
-           </LayersControl.Overlay>
-              <LayersControl.Overlay checked name="Show US state">
+           </LayersControl.BaseLayer>
+              <LayersControl.BaseLayer checked name="Show US state">
                  <LayerGroup>
                   {this.renderSecond()}
                 </LayerGroup>
-              </LayersControl.Overlay>
+              </LayersControl.BaseLayer>
         </LayersControl>
         </Map>
       </div>
