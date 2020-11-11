@@ -59,6 +59,16 @@ class Covid19Predict extends PureComponent {
     });
   };
 
+  handleTrendSelect = e => {
+    console.log(e);
+
+    this.setState({
+      trend: e
+
+    });
+  };
+
+
   handleMapShownSelect = e =>{
     this.setState({
       mapShown: e.target.value
@@ -83,6 +93,7 @@ class Covid19Predict extends PureComponent {
       days: 14,
       dynamicMapOn: false,
       dataType: ["confirmed"],
+      trend: ["current"],
       statistic: "cumulative",
       mapShown: "confirmed",
       yScale: "linear",
@@ -264,7 +275,7 @@ class Covid19Predict extends PureComponent {
    * days to predict is handled separately by onDaysToPredictChange.
    */
   onValuesChange(changedValues, allValues) {
-    const {dataType} = this.state;
+    const {dataType, trend} = this.state;
     if ("socialDistancing" in changedValues) {
       // If either the social distancing or model parameters were changed, we
       // clear our data and do a full reload. We purposely ignore days to
@@ -433,6 +444,7 @@ class Covid19Predict extends PureComponent {
       mainGraphData,
       dynamicMapOn,
       dataType,
+      trend,
       statistic,
       mapShown,
       yScale,
@@ -654,7 +666,7 @@ class Covid19Predict extends PureComponent {
                     areas: areas,
                     models: models,
                     days: 14,
-                    socialDistancing: ["current"]
+                    socialDistancing:trend
                   }}
                 >
                   <Popover
@@ -721,7 +733,10 @@ class Covid19Predict extends PureComponent {
                     placement="right"
                     visible={this.state.showControlInstructions}>
                     <Form.Item label="Social Distancing" name="socialDistancing">
-                      <Checkbox.Group style={{ width: '100%' }}>
+                      <Checkbox.Group style={{ width: '100%' }}
+                        value={trend}
+                        onChange={this.handleTrendSelect}
+                        >
                         <Row>
                           <Checkbox defaultChecked value="current">
                             Current Trend
@@ -789,24 +804,12 @@ class Covid19Predict extends PureComponent {
               </Row>
               <Row>
                 <span className="map-control">
-                  <Popover>
-                  	<Switch onChange={this.switchDynamicMap} />
-                    &nbsp;&nbsp;States/Provinces&nbsp;&nbsp;  
-                  </Popover>
-                </span>
-                <span className="map-control">
                   <Popover
                     content={MAP_INSTRUCTION.dynamicMap}
                     placement="bottom"
                     visible={this.state.showMapInstructions}>
                     <Switch onChange={this.switchDynamicMap} />
                     &nbsp;&nbsp;Dynamic Map&nbsp;&nbsp;  
-                  </Popover>
-                </span>
-                <span className="map-control">
-                  <Popover>
-                    <Switch onChange={this.switchDynamicMap} />
-                    &nbsp;&nbsp;Visualize cases per million&nbsp;&nbsp;  
                   </Popover>
                 </span>
               </Row>

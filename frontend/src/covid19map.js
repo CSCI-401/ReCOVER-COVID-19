@@ -246,7 +246,6 @@ class Covid19Map extends Component {
       this.setCases();
     } else {
       for (var i = 0; i < global_lat_long.length; i++) {
-          console.log(this.state.areasList[i].country);
         let area = this.state.caseData[i];
 
         if (typeof(area.deathRadius) === "undefined") {
@@ -322,7 +321,6 @@ class Covid19Map extends Component {
                   stroke: false,
                   onClick: (e) => this.handleMapClick(e)
                 });
-              console.log("got gere" + this.state.stateMarkers);
 
         }
 
@@ -461,7 +459,6 @@ class Covid19Map extends Component {
       this.state.us[i].caseOpacity = opacity;
     }
     //this.setState({ markers: this.state.markers });
-    console.log("got HERE" + this.state.stateMarkers.length);
   }
 
   setDeaths() {
@@ -543,12 +540,10 @@ class Covid19Map extends Component {
   }
 
   renderFirst() {
-console.log("????")
     return <Covid19MarkerList markers={this.state.us} />;
   }
 
   renderSecond() {
-    console.log("HERHEHEE" + this.state.stateMarkers.length)
    return <Covid19MarkerList markers={this.state.stateMarkers} />;
   }
 
@@ -573,7 +568,7 @@ console.log("????")
       <Covid19MarkerList markers={this.state.markers} />
 
         <LayersControl position='topright'>
-           <LayersControl.BaseLayer checked name="Hide US general">
+           <LayersControl.BaseLayer checked name="Show US general">
                 <LayerGroup>
                   {this.renderFirst()}
                 </LayerGroup>
