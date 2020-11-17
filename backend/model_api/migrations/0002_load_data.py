@@ -11,7 +11,11 @@ DATA_SOURCE_PATHS = {
     "US": {
         "INFECTION": "../results/forecasts/us_data.csv",
         "DEATH": "../results/forecasts/us_deaths.csv"
-    }
+    },
+    "COUNTY": {
+        "INFECTION": "../results/forecasts/county_data.csv",
+        "DEATH": "../results/forecasts/county_deaths.csv"
+    } 
 }
 
 def load_csv(apps, path, scope, type):
@@ -37,17 +41,21 @@ def load_csv(apps, path, scope, type):
         data = []
         using_death_data_point = type == "DEATH"
         using_state_level = scope == "US"
+        using_county_level = scope == "COUNTY"
 
         for row in reader:
             area = None
 
-            # Determine the country / state.
-            if not using_state_level:
+            # Determine the country / state / county.
+            if using_county_level:
+                country = "US"
+                state = row[1]
+            elif using_state_level:
+                country = "US"
+                state = row[1]
+            else:
                 country = row[1]
                 state = ''
-            else:
-                country = 'US'
-                state = row[1]
 
             # Try to find the corresponding area.
             try:
@@ -62,7 +70,7 @@ def load_csv(apps, path, scope, type):
                 msg = "Found multiple areas for country '{0}'".format(
                     country)
                 if state:
-                    msg += " and state '{0}'".format(state)
+                    msg += " and state/county '{0}'".format(state)
                 msg += ' in model_api_area. Skip this area.'
                 print(msg)
                 continue
