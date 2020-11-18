@@ -424,7 +424,7 @@ class Covid19Map extends Component {
     return (
       <div>
         <Map
-          style={{ height: "880px", width: "100%" }}
+          style={{ height: "790px", width: "100%" }}
           zoom={4}
           minZoom={3}
           center={[37.8, -96]}

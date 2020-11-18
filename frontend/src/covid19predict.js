@@ -138,7 +138,7 @@ class Covid19Predict extends PureComponent {
         }
     ));
 
-    this.modelAPI.getCurrentDate(currentDate => 
+    this.modelAPI.getCurrentDate(currentDate =>
       this.setState({
         currentDate: currentDate[0].date,
         firstDate: currentDate[0].firstDate
@@ -208,7 +208,7 @@ class Covid19Predict extends PureComponent {
               state: areaObj.state,
               country: areaObj.country,
               days: this.state.days
-            }, 
+            },
             data =>{
               this.setState(prevState => ({
                 mainGraphData: {
@@ -225,7 +225,7 @@ class Covid19Predict extends PureComponent {
             areas: this.state.areas
           });
         }
-        
+
       }
     );
   }
@@ -279,14 +279,14 @@ class Covid19Predict extends PureComponent {
           this.reloadAll();
         }
       );
-    } 
+    }
     if ("models" in changedValues)
     {
           this.setState({
             models: changedValues.models,
           }, ()=>{
             this.reloadAll();
-          });      
+          });
     }
     else {
       // If we're here it means the user either added or deleted an area, so we
@@ -320,8 +320,8 @@ class Covid19Predict extends PureComponent {
   }
 
   // Set the reference to the map component as a child-component.
-  bindRef = ref => { 
-    this.map = ref 
+  bindRef = ref => {
+    this.map = ref
   }
 
 
@@ -470,13 +470,13 @@ class Covid19Predict extends PureComponent {
           Select the areas by clicking on the map or searching in this input box.
         </p>
       ),
-      
+
       model: (
         <div className="instruction horizontal">
           <p className="instruction horizontal">
             Our model produces forecasts for multiple under-reported positive cases options.
-            For example, "SI-kJalpha - 20x " denotes the assumption that 
-            the under-reported positive cases are 20 times of the current reported cases.            
+            For example, "SI-kJalpha - 20x " denotes the assumption that
+            the under-reported positive cases are 20 times of the current reported cases.
             For modeling details, please see: <a href="https://arxiv.org/abs/2004.11372" target="blank">https://arxiv.org/abs/2004.11372</a>.
           </p>
         </div>
@@ -490,7 +490,7 @@ class Covid19Predict extends PureComponent {
 
       socialDistancing: (
         <p className="instruction horizontal">
-          Please select one of the three social distancing scenarios.  
+          Please select one of the three social distancing scenarios.
         </p>
       ),
 
@@ -517,14 +517,14 @@ class Covid19Predict extends PureComponent {
       dynamicMap: (
         <p className="instruction vertical">
         Enable the map to dynamically change to reflect the prediction.
-        Note that this functionality is not yet perfect and the reaction time 
+        Note that this functionality is not yet perfect and the reaction time
         may be slow depending on your machine.
         </p>
       ),
 
       radioGroup: (
         <p className="instruction vertical">
-          Switch between cumulative infection view or death view on the heatmap. 
+          Switch between cumulative infection view or death view on the heatmap.
         </p>
       )
     };
@@ -541,14 +541,14 @@ class Covid19Predict extends PureComponent {
     // Generate the global overview paragraph
     let overview = "";
 
-    // In case we cannot fetch data from the external API, 
+    // In case we cannot fetch data from the external API,
     // the overview will not show up.
     if (this.state.totalConfirmed != 0 && this.state.totalDeaths != 0) {
       const today = new Date();
       const dd = String(today.getDate()).padStart(2, '0');
       const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
       const yyyy = today.getFullYear();
-  
+
       //today = mm + '/' + dd + '/' + yyyy;
       const totalConfirmed = this.state.totalConfirmed.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
       const totalDeaths = this.state.totalDeaths.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -564,7 +564,7 @@ class Covid19Predict extends PureComponent {
        {
           confirmed_model_map = models[i]
           if (death_model_map.length === 0)
-          { 
+          {
             death_model_map = models[i] + " (death prediction)"
           }
           break
@@ -575,22 +575,20 @@ class Covid19Predict extends PureComponent {
        }
     }
 
-    
 
 
-    const Heading = ( 
-       <div id="header" className="text-center"> 
-            <h1>COVID-19 Forecast</h1> 
-            <div id="overview">{overview}</div> 
-       </div> 
-      ); 
+
+    const Heading = (
+       <div id="header">
+            <h1>COVID-19 Forecast</h1>
+            <div id="overview">{overview}</div>
+       </div>
+      );
     return (
       <div className="covid-19-predict">
         {Heading}
         <div>
-    <Tabs theme={tabTheme}>
-      <Tab label="Country">
-        <div id="common" className="text-center"> 
+        <div id="common">
             <div id="slider">
             <Form
                   ref={this.formRef}
@@ -639,7 +637,7 @@ class Covid19Predict extends PureComponent {
                 </Form.Item>
               </Popover>
             </div>
-          </div> 
+          </div>
         <Row type="flex" justify="space-around" id="charts">
             {noDataError?
               <Alert
@@ -701,8 +699,8 @@ class Covid19Predict extends PureComponent {
                       </Select>
                     </Form.Item>
                   </Popover>
-                  <Popover 
-                    content={CONTROL_INSTRUCTIONS.socialDistancing} 
+                  <Popover
+                    content={CONTROL_INSTRUCTIONS.socialDistancing}
                     placement="right"
                     visible={this.state.showControlInstructions}>
                     <Form.Item label="Social Distancing" name="socialDistancing">
@@ -711,10 +709,10 @@ class Covid19Predict extends PureComponent {
                           <Checkbox defaultChecked value="current">
                             Current Trend
                           </Checkbox>
-                          <Checkbox value="worst_effort"> 
+                          <Checkbox value="worst_effort">
                             Worst Distancing Effort
                           </Checkbox>
-                          <Checkbox value="best_effort"> 
+                          <Checkbox value="best_effort">
                             Best Distancing Effort
                           </Checkbox>
                         </Row>
@@ -736,7 +734,7 @@ class Covid19Predict extends PureComponent {
                       </Checkbox.Group>
                     </Form.Item>
                   </Popover>
-                  
+
                   <Popover
                     content={CONTROL_INSTRUCTIONS.scale}
                     placement="right"
@@ -767,62 +765,61 @@ class Covid19Predict extends PureComponent {
           </Col>
           <Col span={12}>
             <div className="form-wrapper gray" id="graph_options">
-              <Row>
-      			<b>Show:</b>
-              </Row>
-              <Row>
+            <Row>
+              <b>Show:</b>
+            </Row>
+            <Row>
                 <span className="map-control">
-                  <Popover>
-                  	<Switch defaultChecked onChange={this.switchDynamicMap} />
-                    &nbsp;&nbsp;States/Provinces&nbsp;&nbsp;  
-                  </Popover>
+                  <Popover
+                    content={MAP_INSTRUCTION.radioGroup}
+                    placement="bottom"
+                    visible={this.state.showMapInstructions}>
+                      <Radio.Group
+                        value={mapShown}
+                        onChange={this.handleMapShownSelect}>
+                        <Radio value="confirmed">Confirmed Cases</Radio>
+                      </Radio.Group>
+                    </Popover>
                 </span>
                 <span className="map-control">
+                    <Popover
+                    content={MAP_INSTRUCTION.radioGroup}
+                    placement="bottom"
+                    visible={this.state.showMapInstructions}>
+                      <Radio.Group
+                        value={mapShown}
+                        onChange={this.handleMapShownSelect}>
+                        <Radio value="death">Deaths</Radio>
+                      </Radio.Group>
+                    </Popover>
+                </span>
+            </Row>
+
+              <Row>
+                <span>
                   <Popover
                     content={MAP_INSTRUCTION.dynamicMap}
                     placement="bottom"
                     visible={this.state.showMapInstructions}>
                     <Switch onChange={this.switchDynamicMap} />
-                    &nbsp;&nbsp;Dynamic Map&nbsp;&nbsp;  
+                    &nbsp;&nbsp;Dynamic Map&nbsp;&nbsp;
                   </Popover>
                 </span>
-                <span className="map-control">
-                  <Popover>
-                    <Switch onChange={this.switchDynamicMap} />
-                    &nbsp;&nbsp;Visualize cases per million&nbsp;&nbsp;  
-                  </Popover>
+                <span>
+                  <div className="instruction-buttons-wrapper">
+                    <Button className="instruction-button"
+                        onClick={this.toggleControlInstructions}>
+                        {(this.state.showControlInstructions == false)? "Help with controls" : "Close control instructions"}
+                    </Button>
+                    <Button className="instruction-button"
+                        onClick={this.toggleMapInstructions}>
+                        {(this.state.showMapInstructions == false)? "Help with the map" : "Close map instructions"}
+                    </Button>
+                  </div>
                 </span>
               </Row>
 
-              <Row>
-              	<b>Show:</b>
-              </Row>
-              <Row>
-                  <span className="map-control">
-                    <Popover
-                      content={MAP_INSTRUCTION.radioGroup}
-                      placement="bottom"
-                      visible={this.state.showMapInstructions}>
-                        <Radio.Group
-                          value={mapShown}
-                          onChange={this.handleMapShownSelect}>
-                          <Radio value="confirmed">Confirmed Cases</Radio>
-                        </Radio.Group>
-                      </Popover>
-                  </span>
-                  <span className="map-control">
-                      <Popover
-                      content={MAP_INSTRUCTION.radioGroup}
-                      placement="bottom"
-                      visible={this.state.showMapInstructions}>
-                        <Radio.Group
-                          value={mapShown}
-                          onChange={this.handleMapShownSelect}>
-                          <Radio value="death">Deaths</Radio>
-                        </Radio.Group>
-                      </Popover>
-                  </span>
-              </Row>
+
 
             </div>
             <Row>
@@ -833,7 +830,7 @@ class Covid19Predict extends PureComponent {
                   days={days}
                   confirmed_model = {confirmed_model_map}
                   death_model = {death_model_map}
-                  onMapClick={this.onMapClick} 
+                  onMapClick={this.onMapClick}
                   onNoData = {this.onNoData}
                   statistic={statistic}
                   dataType = {mapShown}
@@ -854,41 +851,14 @@ class Covid19Predict extends PureComponent {
             </Row>
           </Col>
           </Row>
-      </Tab>
-      <Tab label="State">
-        <div id="common" className="text-center"> 
-            <div id="slider">
-            </div>
-            <div id="statistics">
-              <Popover
-                content={CONTROL_INSTRUCTIONS.statistics}
-                placement="right"
-                visible={this.state.showControlInstructions}>
-                <Form.Item label="Statistic">
-                  <Radio.Group
-                    value={statistic}
-                    onChange={this.handleStatisticSelect}
-                  >
-                    <Radio value="cumulative">Cumulative Cases</Radio>
-                    <Radio value="delta">New Cases</Radio>
-                  </Radio.Group>
-                </Form.Item>
-              </Popover>
-            </div>
-          </div> 
-
-      </Tab>
-      <Tab label="County">Third Content</Tab>
-      <Tab label="Reproduction">Third Content</Tab>
-    </Tabs>
   </div>
 
 
-        
-          
-          
-          
-        
+
+
+
+
+
       </div>
     );
   }

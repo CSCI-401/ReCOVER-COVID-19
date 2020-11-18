@@ -19,13 +19,13 @@
     width: 100%;
 }
 
-.instruction-button {
-    margin: 20px 40px;
-    padding: 4px;
+.instruction-buttons-wrapper{
+  float: right;
 }
 
-.instruction-buttons-wrapper {
-    margin: 40px auto;
+.instruction-button {
+    display: inline-block;
+    margin-right: 20px;
 }
 
 .instruction {
@@ -57,14 +57,20 @@
 }
 
 #header {
-    /*background-color: yellow;*/
-    margin-top: 20%;
-    top: 20%;
+    padding: 1%;
+    top: 50%;
     justify-content: center;
     align-items: center;
     margin: 0 auto;
     width: 80%;
     text-align: center;
+}
+
+#overview {
+    /*background-color: #F2F2F2;*/
+    font-size: 20px;
+    border-style: outset;
+    padding: 30px 40px;
 }
 
 #charts{
@@ -75,40 +81,6 @@
     /*background-color: blue;*/
 }
 
-#tabs{
-    position: relative;
-    padding-top: 20px;
-    /*background-color: purple;*/
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto;
-    width: 80%;
-}
-
-#tabs .text {
-    margin-left: 3%;
-    margin-right: 3%;
-    display: inline-block;
-    /*line-height: 20px;*/
-    /*padding: 15px;*/
-    font-size: x-large;
-}
-
-#tabs .selected {
-    padding-bottom: 5px;
-    border-bottom: 5px solid #990000;
-}
-
-#tabs .deselected {
-    padding-bottom: 5px;
-    border-bottom: 5px solid #D3D3D3;
-}
-#overview {
-    /*background-color: #F2F2F2;*/
-    font-size: 20px;
-    border-style: outset;
-    padding: 30px 40px;
-}
 #common {
   display:flex;
   flex-direction:row;
@@ -123,11 +95,12 @@
     width: 50%;
     position:relative;
     padding: 10px 30px;
+    text-align: left;
 }
 #graph_options {
     background-color: #E1DFDF;
     position: relative;
-    margin-bottom: 5%;
+    margin-bottom: 3%;
     width: 100%;
 }
 
@@ -153,11 +126,11 @@
   border-color: red !important;
 }
 
-.ant-steps-item-process .ant-steps-item-icon { 
-    background: red !important; 
+.ant-steps-item-process .ant-steps-item-icon {
+    background: red !important;
 }
 
-.ant-switch-checked { 
+.ant-switch-checked {
     background:red!important;
 }
 
@@ -179,33 +152,3 @@
   font-weight: bold !important;
 
 }
-
-
-.tab-list {
-  border-bottom: 1px solid #ccc;
-  padding-left: 0;
-  background-color: red;
-  height: 20px;
-}
-
-.tab-list-item {
-  display: inline-block;
-  list-style: none;
-  margin-bottom: -1px;
-  padding: 0.5rem 0.75rem;
-  background-color: red;
-  height: 20px;
-}
-
-.tab-list-active {
-  background-color: white;
-  border: solid #ccc;
-  border-width: 1px 1px 0 1px;
-  background-color: red;
-  height: 20px;
-}
-
-/*.gray{
-    background-color: #808080;
-}
-*/
