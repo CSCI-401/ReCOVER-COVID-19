@@ -80,7 +80,7 @@ class Covid19Predict extends PureComponent {
       worst_effort: false,
       best_effort: false,
       mainGraphData: {},
-      days: 14,
+      days: 0,
       dynamicMapOn: true,
       dataType: ["confirmed"],
       statistic: "cumulative",
@@ -598,7 +598,7 @@ class Covid19Predict extends PureComponent {
                   initialValues={{
                     areas: areas,
                     models: models,
-                    days: 14,
+                    days: 0,
                     socialDistancing: ["current"]
                   }}
                 >
@@ -659,7 +659,7 @@ class Covid19Predict extends PureComponent {
                   initialValues={{
                     areas: areas,
                     models: models,
-                    days: 14,
+                    days: 0,
                     socialDistancing: ["current"]
                   }}
                 >
@@ -782,7 +782,7 @@ class Covid19Predict extends PureComponent {
                     content={MAP_INSTRUCTION.dynamicMap}
                     placement="bottom"
                     visible={this.state.showMapInstructions}>
-                    <Switch onChange={this.switchDynamicMap} />
+                    <Switch defaultChecked onChange={this.switchDynamicMap} />
                     &nbsp;&nbsp;Dynamic Map&nbsp;&nbsp;  
                   </Popover>
                 </span>

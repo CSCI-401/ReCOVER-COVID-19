@@ -4,7 +4,7 @@ import ModelAPI from "./modelapi";
 import "leaflet/dist/leaflet.css";
 
 import globalLL from "./frontendData/global_lats_longs.txt"
-import population from './frontendData/global_population_data.txt'
+import population from "./frontendData/global_population_data.txt"
 
 import Papa from "papaparse";
 
@@ -12,7 +12,7 @@ var global_lat_long;
 var populationVect;
 
 function parse_lat_long_global(data) {
-    global_lat_long = data;
+  global_lat_long = data;
 }
 
 function parse_population(data) {
@@ -98,7 +98,10 @@ class Covid19Map extends Component {
       worldDeaths: [],
       markers: [],
       stateMarkers: [],
+      countyMarkers: [],
+      renderStateCountyMarkers: [],
       us: [],
+      renderUS: [],
       callbackCounter: 0,
       mapInitialized: false
     };
@@ -124,19 +127,22 @@ class Covid19Map extends Component {
         let mapInitialized = true;
         this.setState({ mapInitialized });
         if (typeof(this.state.caseData) != "undefined" && typeof(this.state.deathData) != "undefined") {
-          for (var i = 0; i < global_lat_long.length; i++) {
+          for (var i = 0; i < global_lat_long.length + 160; i++) {
+            if (i === 240) {
+              i = 400;
+            }
             let caseArea = this.state.caseData[i];
             let deathArea = this.state.deathData[i];
             let caseOpacity = 0.5;
-            if (caseArea.valueTrue === 0) {
+            if (caseArea.caseValueTrue === 0) {
               caseOpacity = 0;
             }
             let deathOpacity = 1;
-            if (deathArea.valueTrue === 0) {
+            if (deathArea.deathValueTrue === 0) {
               deathOpacity = 0;
             }
             if (i < 184) {
-              let compare = this.state.areasList[i].country + " ";
+              let compare = this.state.caseData[i].area.country + " ";
               if ("US " === compare) {
                 this.state.us.push({
                   key: caseArea.name,
@@ -155,6 +161,7 @@ class Covid19Map extends Component {
                   stroke: true,
                   onClick: (e) => this.handleMapClick(e)
                 });
+                this.state.renderUS.push(this.state.us[0]);
               } else {
                 this.state.markers.push({
                   key: caseArea.name,
@@ -174,7 +181,7 @@ class Covid19Map extends Component {
                   onClick: (e) => this.handleMapClick(e)
                 });
               }
-            } else {
+            } else if (i < 240) {
               this.state.stateMarkers.push({
                 key: caseArea.id,
                 caseKey: caseArea.state + "-cases",
@@ -185,20 +192,42 @@ class Covid19Map extends Component {
                 deathRadius: this.getRadius(deathArea.deathValueTrue),
                 caseValue: caseArea.caseValueTrue,
                 deathValue: deathArea.deathValueTrue,
-                population: " ",
+                population: populationVect[i][0],
                 color: this.getColor(caseArea.caseValueTrue),
-                display: "none",
                 caseOpacity: caseOpacity,
                 deathOpacity: deathOpacity,
                 stroke: true,
                 onClick: (e) => this.handleMapClick(e)
               });
+            } else {
+              let id = global_lat_long[i-160][0];
+              if (typeof(global_lat_long[i-160][4]) !== "number" || typeof(global_lat_long[i-160][5]) !== "number") {
+                continue;
+              }
+              this.state.countyMarkers.push({
+                key: caseArea.name + "-" + id,
+                caseKey: id + "-cases",
+                deathKey: id + "-deaths",
+                data: global_lat_long[i-160][3] + " / " + global_lat_long[i-160][2] + " / " + global_lat_long[i-160][1],
+                center: [global_lat_long[i-160][4], global_lat_long[i-160][5]],
+                caseRadius: 4 * this.getRadius(caseArea.caseValueTrue),
+                deathRadius: this.getRadius(deathArea.deathValueTrue),
+                caseValue: caseArea.caseValueTrue,
+                deathValue: deathArea.deathValueTrue,
+                population: " ",
+                color: this.getColor(caseArea.caseValueTrue),
+                caseOpacity: caseOpacity,
+                deathOpacity: deathOpacity,
+                stroke: true,
+                onClick: (e) => this.handleMapClick(e) 
+              })
             }
           }
           let markers = this.state.markers;
           let stateMarkers = this.state.stateMarkers;
           let us = this.state.us;
-          this.setState({ markers, stateMarkers, us });
+          let countyMarkers = this.state.countyMarkers;
+          this.setState({ markers, stateMarkers, us, countyMarkers });
         }
       } else {
         let usFound = false;
@@ -383,6 +412,12 @@ class Covid19Map extends Component {
     var area = e.target.options.data;
     if (area) {
       // console.log("Clicked on " + area);
+      // if (area === "US") {
+      //   this.renderStatesCounties();
+      // }
+      // if (area.slice(0, 5) === "US / ") {
+      //   this.renderUS();
+      // }
       onMapClick(area);
     } else {
       onNoData(area);
@@ -394,8 +429,8 @@ class Covid19Map extends Component {
       return value;
   	var radius = Math.log(value / 100);
 
-  	if (radius < 1)
-  		radius = 1;
+  	if (radius < 0.5)
+  		radius = 0.5;
 
   	return radius;
   }
@@ -404,21 +439,37 @@ class Covid19Map extends Component {
     d /= 10000;
    	return d > 100 ? '#800026' :
            d > 50  ? '#BD0026' :
-           d > 20  ? '#E31A1C' :
+           d > 25  ? '#E31A1C' :
            d > 10  ? '#FC4E2A' :
            d > 5   ? '#FD8D3C' :
            d > 2   ? '#FEB24C' :
-           d > 1   ? '#FED976' :
+           d > 0.5   ? '#FED976' :
                       '#FFEDA0';
   }
 
-  renderFirst() {
+  renderUS() {
     return <Covid19MarkerList markers={this.state.us} />;
   }
 
-  renderSecond() {
+  renderStates() {
     return <Covid19MarkerList markers={this.state.stateMarkers} />;
   }
+
+  renderCounties() {
+    return <Covid19MarkerList markers={this.state.countyMarkers} />;
+  }
+
+  // renderUS() {
+  //   let renderUS = this.state.us;
+  //   let renderStateCountyMarkers = [];
+  //   this.setState({ renderUS, renderStateCountyMarkers });
+  // }
+
+  // renderStatesCounties() {
+  //   let renderStateCountyMarkers = this.state.stateMarkers;
+  //   let renderUS = [];
+  //   this.setState({ renderStateCountyMarkers, renderUS });
+  // }
 
   render() {
     return (
@@ -437,15 +488,22 @@ class Covid19Map extends Component {
         >
           <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
           <Covid19MarkerList markers={this.state.markers} />
+          {/* <Covid19MarkerList markers={this.state.renderUS} />
+          <Covid19MarkerList markers={this.state.renderStateCountyMarkers} /> */}
           <LayersControl position="topright">
             <LayersControl.BaseLayer checked name="Show US Country">
               <LayerGroup>
-                {this.renderFirst()}
+                {this.renderUS()}
               </LayerGroup>
             </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Show US State">
+            <LayersControl.BaseLayer name="Show US States">
               <LayerGroup>
-                {this.renderSecond()}
+                {this.renderStates()}
+              </LayerGroup>
+            </LayersControl.BaseLayer>
+            <LayersControl.BaseLayer name="Show US Counties">
+              <LayerGroup>
+                {this.renderCounties()}
               </LayerGroup>
             </LayersControl.BaseLayer>
           </LayersControl>
