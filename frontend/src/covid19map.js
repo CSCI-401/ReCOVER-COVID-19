@@ -97,11 +97,12 @@ class Covid19Map extends Component {
       worldCases: [],
       worldDeaths: [],
       markers: [],
+      us: [],
       stateMarkers: [],
       countyMarkers: [],
-      renderStateCountyMarkers: [],
-      us: [],
-      renderUS: [],
+      renderUSMarker: [],
+      renderStateMarkers: [],
+      renderCountyMarkers: [],
       callbackCounter: 0,
       mapInitialized: false
     };
@@ -150,8 +151,8 @@ class Covid19Map extends Component {
                   deathKey: caseArea.name + "-deaths",
                   data: caseArea.name,
                   center: [global_lat_long[i][1], global_lat_long[i][2]],
-                  caseRadius: 4 * this.getRadius(caseArea.caseValueTrue),
-                  deathRadius: this.getRadius(deathArea.deathValueTrue),
+                  caseRadius: 2 * this.getRadius(caseArea.caseValueTrue),
+                  deathRadius: 0.5 * this.getRadius(deathArea.deathValueTrue),
                   caseValue: caseArea.caseValueTrue,
                   deathValue: deathArea.deathValueTrue,
                   population: populationVect[i][0],
@@ -161,7 +162,7 @@ class Covid19Map extends Component {
                   stroke: true,
                   onClick: (e) => this.handleMapClick(e)
                 });
-                this.state.renderUS.push(this.state.us[0]);
+                this.state.renderUSMarker.push(this.state.us[0]);
               } else {
                 this.state.markers.push({
                   key: caseArea.name,
@@ -169,8 +170,8 @@ class Covid19Map extends Component {
                   deathKey: caseArea.name + "-deaths",
                   data: caseArea.name,
                   center: [global_lat_long[i][1], global_lat_long[i][2]],
-                  caseRadius: 4 * this.getRadius(caseArea.caseValueTrue),
-                  deathRadius: this.getRadius(deathArea.deathValueTrue),
+                  caseRadius: 2 * this.getRadius(caseArea.caseValueTrue),
+                  deathRadius: 0.5 * this.getRadius(deathArea.deathValueTrue),
                   caseValue: caseArea.caseValueTrue,
                   deathValue: deathArea.deathValueTrue,
                   population: populationVect[i][0],
@@ -188,8 +189,8 @@ class Covid19Map extends Component {
                 deathKey: caseArea.state + "-deaths",
                 data: caseArea.name +  " / " + caseArea.state,
                 center: [global_lat_long[i][1], global_lat_long[i][2]],
-                caseRadius: 4 * this.getRadius(caseArea.caseValueTrue),
-                deathRadius: this.getRadius(deathArea.deathValueTrue),
+                caseRadius: 2 * this.getRadius(caseArea.caseValueTrue),
+                deathRadius: 0.5 * this.getRadius(deathArea.deathValueTrue),
                 caseValue: caseArea.caseValueTrue,
                 deathValue: deathArea.deathValueTrue,
                 population: populationVect[i][0],
@@ -205,13 +206,13 @@ class Covid19Map extends Component {
                 continue;
               }
               this.state.countyMarkers.push({
-                key: caseArea.name + "-" + id,
+                key: caseArea.name + "-" + caseArea.state + "-" + id,
                 caseKey: id + "-cases",
                 deathKey: id + "-deaths",
                 data: global_lat_long[i-160][3] + " / " + global_lat_long[i-160][2] + " / " + global_lat_long[i-160][1],
                 center: [global_lat_long[i-160][4], global_lat_long[i-160][5]],
-                caseRadius: 4 * this.getRadius(caseArea.caseValueTrue),
-                deathRadius: this.getRadius(deathArea.deathValueTrue),
+                caseRadius: 2 * this.getRadius(caseArea.caseValueTrue),
+                deathRadius: 0.5 * this.getRadius(deathArea.deathValueTrue),
                 caseValue: caseArea.caseValueTrue,
                 deathValue: deathArea.deathValueTrue,
                 population: " ",
@@ -236,54 +237,58 @@ class Covid19Map extends Component {
         let stateMarkers = this.state.stateMarkers;
         let us = this.state.us;
         for (i = 0; i < global_lat_long.length; i++) {
-          let caseValue = this.state.caseData[i].caseValueTrue;
-          let deathValue = this.state.deathData[i].deathValueTrue;
-          let caseOpacity = 0.5;
-          if (caseValue === 0) {
-            caseOpacity = 0;
-          }
-          let deathOpacity = 1;
-          if (deathValue === 0) {
-            deathOpacity = 0;
-          }
-          if (i < 184) {
-            if (i === 155) {
-              usFound = true;
-              us[0].caseRadius = 4 * this.getRadius(caseValue);
-              us[0].caseValue = caseValue;
-              us[0].color = this.getColor(caseValue);
-              us[0].caseOpacity = caseOpacity;
-              us[0].deathRadius = this.getRadius(deathValue);
-              us[0].deathValue = deathValue;
-              us[0].deathOpacity = deathOpacity;
-            } else {
-              if (usFound) {
-                markers[i-1].caseRadius = 4 * this.getRadius(caseValue);
-                markers[i-1].caseValue = caseValue;
-                markers[i-1].color = this.getColor(caseValue);
-                markers[i-1].caseOpacity = caseOpacity;
-                markers[i-1].deathRadius = this.getRadius(deathValue);
-                markers[i-1].deathValue = deathValue;
-                markers[i-1].deathOpacity = deathOpacity;
+          if (i < this.state.caseData.length) {
+            let caseValue = this.state.caseData[i].caseValueTrue;
+            let deathValue = this.state.deathData[i].deathValueTrue;
+            let caseOpacity = 0.5;
+            if (caseValue === 0) {
+              caseOpacity = 0;
+            }
+            let deathOpacity = 1;
+            if (deathValue === 0) {
+              deathOpacity = 0;
+            }
+            if (i < 184) {
+              if (i === 155) {
+                usFound = true;
+                us[0].caseRadius = 2 * this.getRadius(caseValue);
+                us[0].caseValue = caseValue;
+                us[0].color = this.getColor(caseValue);
+                us[0].caseOpacity = caseOpacity;
+                us[0].deathRadius = 0.5 * this.getRadius(deathValue);
+                us[0].deathValue = deathValue;
+                us[0].deathOpacity = deathOpacity;
               } else {
-                markers[i].caseRadius = 4 * this.getRadius(caseValue);
-                markers[i].caseValue = caseValue;
-                markers[i].color = this.getColor(caseValue);
-                markers[i].caseOpacity = caseOpacity;
-                markers[i].deathRadius = this.getRadius(deathValue);
-                markers[i].deathValue = deathValue;
-                markers[i].deathOpacity = deathOpacity;
+                if (usFound) {
+                  markers[i-1].caseRadius = 2 * this.getRadius(caseValue);
+                  markers[i-1].caseValue = caseValue;
+                  markers[i-1].color = this.getColor(caseValue);
+                  markers[i-1].caseOpacity = caseOpacity;
+                  markers[i-1].deathRadius = 0.5 * this.getRadius(deathValue);
+                  markers[i-1].deathValue = deathValue;
+                  markers[i-1].deathOpacity = deathOpacity;
+                } else {
+                  markers[i].caseRadius = 2 * this.getRadius(caseValue);
+                  markers[i].caseValue = caseValue;
+                  markers[i].color = this.getColor(caseValue);
+                  markers[i].caseOpacity = caseOpacity;
+                  markers[i].deathRadius = 0.5 * this.getRadius(deathValue);
+                  markers[i].deathValue = deathValue;
+                  markers[i].deathOpacity = deathOpacity;
+                }
+              }
+            } else {
+              if (stateCount < stateMarkers.length) {
+                stateMarkers[stateCount].caseRadius = 2 * this.getRadius(caseValue);
+                stateMarkers[stateCount].caseValue = caseValue;
+                stateMarkers[stateCount].color = this.getColor(caseValue);
+                stateMarkers[stateCount].caseOpacity = caseOpacity;
+                stateMarkers[stateCount].deathRadius = 0.5 * this.getRadius(deathValue);
+                stateMarkers[stateCount].deathValue = deathValue;
+                stateMarkers[stateCount].deathOpacity = deathOpacity;
+                stateCount++;
               }
             }
-          } else {
-            stateMarkers[stateCount].caseRadius = 4 * this.getRadius(caseValue);
-            stateMarkers[stateCount].caseValue = caseValue;
-            stateMarkers[stateCount].color = this.getColor(caseValue);
-            stateMarkers[stateCount].caseOpacity = caseOpacity;
-            stateMarkers[stateCount].deathRadius = this.getRadius(deathValue);
-            stateMarkers[stateCount].deathValue = deathValue;
-            stateMarkers[stateCount].deathOpacity = deathOpacity;
-            stateCount++;
           }
         }
         this.setState({ markers, stateMarkers, us });
@@ -412,12 +417,12 @@ class Covid19Map extends Component {
     var area = e.target.options.data;
     if (area) {
       // console.log("Clicked on " + area);
-      // if (area === "US") {
-      //   this.renderStatesCounties();
-      // }
-      // if (area.slice(0, 5) === "US / ") {
-      //   this.renderUS();
-      // }
+      if (area === "US") {
+        this.renderStates();
+      }
+      if (area.slice(0, 5) === "US / ") {
+        this.renderCounties(area);
+      }
       onMapClick(area);
     } else {
       onNoData(area);
@@ -448,15 +453,24 @@ class Covid19Map extends Component {
   }
 
   renderUS() {
-    return <Covid19MarkerList markers={this.state.us} />;
+    let renderUSMarker = this.state.us;
+    let renderStateMarkers = [];
+    let renderCountyMarkers = [];
+    this.setState({ renderUSMarker, renderStateMarkers, renderCountyMarkers });
   }
 
   renderStates() {
-    return <Covid19MarkerList markers={this.state.stateMarkers} />;
+    let renderUSMarker = [];
+    let renderStateMarkers = this.state.stateMarkers;
+    let renderCountyMarkers = [];
+    this.setState({ renderUSMarker, renderStateMarkers, renderCountyMarkers });
   }
 
-  renderCounties() {
-    return <Covid19MarkerList markers={this.state.countyMarkers} />;
+  renderCounties(areaID) {
+    let countiesToBeRendered = this.state.countyMarkers.filter(countyMarker => countyMarker.data.split(" / ").slice(0, 2).join(" / ") === areaID);
+    let renderCountyMarkers = this.state.renderCountyMarkers.concat(countiesToBeRendered);
+    let renderStateMarkers = this.state.renderStateMarkers.filter(stateMarker => stateMarker.data !== areaID);
+    this.setState({ renderCountyMarkers, renderStateMarkers });
   }
 
   // renderUS() {
@@ -488,25 +502,9 @@ class Covid19Map extends Component {
         >
           <TileLayer url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
           <Covid19MarkerList markers={this.state.markers} />
-          {/* <Covid19MarkerList markers={this.state.renderUS} />
-          <Covid19MarkerList markers={this.state.renderStateCountyMarkers} /> */}
-          <LayersControl position="topright">
-            <LayersControl.BaseLayer checked name="Show US Country">
-              <LayerGroup>
-                {this.renderUS()}
-              </LayerGroup>
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Show US States">
-              <LayerGroup>
-                {this.renderStates()}
-              </LayerGroup>
-            </LayersControl.BaseLayer>
-            <LayersControl.BaseLayer name="Show US Counties">
-              <LayerGroup>
-                {this.renderCounties()}
-              </LayerGroup>
-            </LayersControl.BaseLayer>
-          </LayersControl>
+          <Covid19MarkerList markers={this.state.renderUSMarker} />
+          <Covid19MarkerList markers={this.state.renderStateMarkers} />
+          <Covid19MarkerList markers={this.state.renderCountyMarkers} />
         </Map>
       </div>
     )
