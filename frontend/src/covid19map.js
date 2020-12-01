@@ -41,7 +41,7 @@ function numberWithCommas(x) {
 parseData(globalLL, parse_lat_long_global);
 parseData(population, parse_population);
 
-const Covid19Marker = ({ caseKey, deathKey, data, center, caseRadius, deathRadius, caseValue, deathValue, population, color, caseOpacity, deathOpacity, stroke, onClick }) => (
+const Covid19Marker = ({ millionToggle, caseKey, deathKey, data, center, caseRadius, deathRadius, caseValue, deathValue, population, color, caseOpacity, deathOpacity, stroke, onClick }) => (
   <CircleMarker
     key={deathKey}
     data={data}
@@ -115,10 +115,10 @@ class Covid19Map extends Component {
 
   componentDidMount() {
     this.props.triggerRef(this);
-    this.fetchData(this.props.dynamicMapOn);
+    this.fetchData(this.props.dynamicMapOn, this.props.perMillionOn);
   }
 
-  setCaseDeathData() {
+  setCaseDeathData(millionToggleButton) {
     if (this.state.callbackCounter > 1) {
       let callbackCounter = 0;
       this.setState({ callbackCounter });
@@ -143,16 +143,17 @@ class Covid19Map extends Component {
               if ("US " === compare) {
                 this.state.us.push({
                   key: caseArea.name,
+                  millionToggle: millionToggleButton,
                   caseKey: caseArea.name + "-cases",
                   deathKey: caseArea.name + "-deaths",
                   data: caseArea.name,
                   center: [global_lat_long[i][1], global_lat_long[i][2]],
-                  caseRadius: 3 * this.getRadius(caseArea.caseValueTrue),
-                  deathRadius: 0.75 * this.getRadius(deathArea.deathValueTrue),
+                  caseRadius: 3 * this.getRadius(caseArea.caseValueTrue, populationVect[i][0], millionToggleButton),
+                  deathRadius: 0.75 * this.getRadius(deathArea.deathValueTrue, populationVect[i][0], millionToggleButton),
                   caseValue: caseArea.caseValueTrue,
                   deathValue: deathArea.deathValueTrue,
                   population: populationVect[i][0],
-                  color: this.getColor(caseArea.caseValueTrue),
+                  color: this.getColor(caseArea.caseValueTrue, populationVect[i][0], millionToggleButton),
                   caseOpacity: caseOpacity,
                   deathOpacity: deathOpacity,
                   stroke: true,
@@ -162,16 +163,17 @@ class Covid19Map extends Component {
               } else {
                 this.state.markers.push({
                   key: caseArea.name,
+                  millionToggle: millionToggleButton,
                   caseKey: caseArea.name + "-cases",
                   deathKey: caseArea.name + "-deaths",
                   data: caseArea.name,
                   center: [global_lat_long[i][1], global_lat_long[i][2]],
-                  caseRadius: 3 * this.getRadius(caseArea.caseValueTrue),
-                  deathRadius: 0.75 * this.getRadius(deathArea.deathValueTrue),
+                  caseRadius: 3 * this.getRadius(caseArea.caseValueTrue, populationVect[i][0], millionToggleButton),
+                  deathRadius: 0.75 * this.getRadius(deathArea.deathValueTrue, populationVect[i][0], millionToggleButton),
                   caseValue: caseArea.caseValueTrue,
                   deathValue: deathArea.deathValueTrue,
                   population: populationVect[i][0],
-                  color: this.getColor(caseArea.caseValueTrue),
+                  color: this.getColor(caseArea.caseValueTrue, populationVect[i][0], millionToggleButton),
                   caseOpacity: caseOpacity,
                   deathOpacity: deathOpacity,
                   stroke: true,
@@ -181,16 +183,17 @@ class Covid19Map extends Component {
             } else {
               this.state.stateMarkers.push({
                 key: caseArea.id,
+                millionToggle: millionToggleButton,
                 caseKey: caseArea.state + "-cases",
                 deathKey: caseArea.state + "-deaths",
                 data: caseArea.name +  " / " + caseArea.state,
                 center: [global_lat_long[i][1], global_lat_long[i][2]],
-                caseRadius: 3 * this.getRadius(caseArea.caseValueTrue),
-                deathRadius: 0.75 * this.getRadius(deathArea.deathValueTrue),
+                caseRadius: 3 * this.getRadius(caseArea.caseValueTrue, populationVect[i][0], millionToggleButton),
+                deathRadius: 0.75 * this.getRadius(deathArea.deathValueTrue, populationVect[i][0], millionToggleButton),
                 caseValue: caseArea.caseValueTrue,
                 deathValue: deathArea.deathValueTrue,
                 population: populationVect[i][0],
-                color: this.getColor(caseArea.caseValueTrue),
+                color: this.getColor(caseArea.caseValueTrue, populationVect[i][0], millionToggleButton),
                 display: "none",
                 caseOpacity: caseOpacity,
                 deathOpacity: deathOpacity,
@@ -224,38 +227,42 @@ class Covid19Map extends Component {
           if (i < 184) {
             if (i === 155) {
               usFound = true;
-              us[0].caseRadius = 3 * this.getRadius(caseValue);
+              us[0].millionToggle = millionToggleButton;
+              us[0].caseRadius = 3 * this.getRadius(caseValue, populationVect[i][0], millionToggleButton);
               us[0].caseValue = caseValue;
-              us[0].color = this.getColor(caseValue);
+              us[0].color = this.getColor(caseValue, populationVect[i][0], millionToggleButton);
               us[0].caseOpacity = caseOpacity;
-              us[0].deathRadius = 0.75 * this.getRadius(deathValue);
+              us[0].deathRadius = 0.75 * this.getRadius(deathValue, populationVect[i][0], millionToggleButton);
               us[0].deathValue = deathValue;
               us[0].deathOpacity = deathOpacity;
             } else {
               if (usFound) {
-                markers[i-1].caseRadius = 3 * this.getRadius(caseValue);
+                markers[i-1].millionToggle = millionToggleButton;
+                markers[i-1].caseRadius = 3 * this.getRadius(caseValue, populationVect[i][0], millionToggleButton);
                 markers[i-1].caseValue = caseValue;
-                markers[i-1].color = this.getColor(caseValue);
+                markers[i-1].color = this.getColor(caseValue, populationVect[i][0], millionToggleButton);
                 markers[i-1].caseOpacity = caseOpacity;
-                markers[i-1].deathRadius = 0.75 * this.getRadius(deathValue);
+                markers[i-1].deathRadius = 0.75 * this.getRadius(deathValue, populationVect[i][0], millionToggleButton);
                 markers[i-1].deathValue = deathValue;
                 markers[i-1].deathOpacity = deathOpacity;
               } else {
-                markers[i].caseRadius = 3 * this.getRadius(caseValue);
+                markers[i].millionToggle = millionToggleButton;
+                markers[i].caseRadius = 3 * this.getRadius(caseValue, populationVect[i][0], millionToggleButton);
                 markers[i].caseValue = caseValue;
-                markers[i].color = this.getColor(caseValue);
+                markers[i].color = this.getColor(caseValue, populationVect[i][0], millionToggleButton);
                 markers[i].caseOpacity = caseOpacity;
-                markers[i].deathRadius = 0.75 * this.getRadius(deathValue);
+                markers[i].deathRadius = 0.75 * this.getRadius(deathValue, populationVect[i][0], millionToggleButton);
                 markers[i].deathValue = deathValue;
                 markers[i].deathOpacity = deathOpacity;
               }
             }
           } else {
-            stateMarkers[stateCount].caseRadius = 3 * this.getRadius(caseValue);
+            stateMarkers[stateCount].millionToggle = millionToggleButton;
+            stateMarkers[stateCount].caseRadius = 3 * this.getRadius(caseValue, populationVect[i][0], millionToggleButton);
             stateMarkers[stateCount].caseValue = caseValue;
-            stateMarkers[stateCount].color = this.getColor(caseValue);
+            stateMarkers[stateCount].color = this.getColor(caseValue, populationVect[i][0], millionToggleButton);
             stateMarkers[stateCount].caseOpacity = caseOpacity;
-            stateMarkers[stateCount].deathRadius = 0.75 * this.getRadius(deathValue);
+            stateMarkers[stateCount].deathRadius = 0.75 * this.getRadius(deathValue, populationVect[i][0], millionToggleButton);
             stateMarkers[stateCount].deathValue = deathValue;
             stateMarkers[stateCount].deathOpacity = deathOpacity;
             stateCount++;
@@ -266,7 +273,7 @@ class Covid19Map extends Component {
     }
   }
 
-  getCaseDeathData() {
+  getCaseDeathData(perMillionOn) {
     this.modelAPI.cumulative_infections(cumulativeInfections => {
       let caseData = cumulativeInfections.map(d => {
         return {
@@ -280,7 +287,7 @@ class Covid19Map extends Component {
       });
       let callbackCounter = this.state.callbackCounter;
       callbackCounter++;
-      this.setState({ caseData, callbackCounter }, this.setCaseDeathData);
+      this.setState({ caseData, callbackCounter }, this.setCaseDeathData(perMillionOn));
     });
     this.modelAPI.cumulative_death({
       days: 0
@@ -297,11 +304,11 @@ class Covid19Map extends Component {
       });
       let callbackCounter = this.state.callbackCounter;
       callbackCounter++;
-      this.setState({ deathData, callbackCounter }, this.setCaseDeathData);
+      this.setState({ deathData, callbackCounter }, this.setCaseDeathData(perMillionOn));
     });
   }
 
-  predictCaseDeathData() {
+  predictCaseDeathData(perMillionOn) {
     this.modelAPI.predict_all({
       days: this.props.days,
       model: this.props.confirmed_model
@@ -318,7 +325,7 @@ class Covid19Map extends Component {
       });
       let callbackCounter = this.state.callbackCounter;
       callbackCounter++;
-      this.setState({ caseData, callbackCounter }, this.setCaseDeathData);
+      this.setState({ caseData, callbackCounter }, this.setCaseDeathData(perMillionOn));
     });
     this.modelAPI.predict_all({
       days: this.props.days,
@@ -336,11 +343,11 @@ class Covid19Map extends Component {
       });
       let callbackCounter = this.state.callbackCounter;
       callbackCounter++;
-      this.setState({ deathData, callbackCounter }, this.setCaseDeathData);
+      this.setState({ deathData, callbackCounter }, this.setCaseDeathData(perMillionOn));
     });
   }
 
-  getHistoryCumulative() {
+  getHistoryCumulative(perMillionOn) {
     this.modelAPI.history_cumulative({
       days: this.props.days
     }, historyCumulative => {
@@ -359,11 +366,11 @@ class Covid19Map extends Component {
       let deathData = caseData;
       let callbackCounter = this.state.callbackCounter;
       callbackCounter += 2;
-      this.setState({ caseData, deathData, callbackCounter }, this.setCaseDeathData);
+      this.setState({ caseData, deathData, callbackCounter }, this.setCaseDeathData(perMillionOn));
     });
   }
 
-  newCases() {
+  newCases(perMillionOn) {
     if (this.props.days > 0) {
       // prediction
       this.modelAPI.predict_all({
@@ -387,7 +394,7 @@ class Covid19Map extends Component {
             });
             let callbackCounter = this.state.callbackCounter;
             callbackCounter++;
-            this.setState({ caseData, callbackCounter }, this.setCaseDeathData);
+            this.setState({ caseData, callbackCounter }, this.setCaseDeathData(perMillionOn));
           });
         } else {
           this.modelAPI.history_cumulative({
@@ -405,7 +412,7 @@ class Covid19Map extends Component {
             });
             let callbackCounter = this.state.callbackCounter;
             callbackCounter++;
-            this.setState({ caseData, callbackCounter }, this.setCaseDeathData);
+            this.setState({ caseData, callbackCounter }, this.setCaseDeathData(perMillionOn));
           });
         }
       });
@@ -429,7 +436,7 @@ class Covid19Map extends Component {
             });
             let callbackCounter = this.state.callbackCounter;
             callbackCounter++;
-            this.setState({ deathData, callbackCounter }, this.setCaseDeathData);
+            this.setState({ deathData, callbackCounter }, this.setCaseDeathData(perMillionOn));
           });
         } else {
           this.modelAPI.history_cumulative({
@@ -446,7 +453,7 @@ class Covid19Map extends Component {
             });
             let callbackCounter = this.state.callbackCounter;
             callbackCounter++;
-            this.setState({ deathData, callbackCounter }, this.setCaseDeathData);
+            this.setState({ deathData, callbackCounter }, this.setCaseDeathData(perMillionOn));
           });
         }
       });
@@ -472,30 +479,32 @@ class Covid19Map extends Component {
           let deathData = caseData;
           let callbackCounter = this.state.callbackCounter;
           callbackCounter += 2;
-          this.setState({ caseData, deathData, callbackCounter }, this.setCaseDeathData);
+          this.setState({ caseData, deathData, callbackCounter }, this.setCaseDeathData(perMillionOn));
         });
       });
     }
   }
 
-  fetchData(dynamicMapOn) {
+  fetchData(dynamicMapOn, perMillionOn) {
     if (!dynamicMapOn || (this.props.confirmed_model === "" && this.props.death_model === "")) {
       // without dynamic map, show cumulative cases to date
-      this.getCaseDeathData();
+      this.setCaseDeathData(perMillionOn);
     } else {
       // with dynamic map
       if (this.props.statistic === "cumulative") {
         if (this.props.days > 0) {
-          this.predictCaseDeathData();
+          this.predictCaseDeathData(perMillionOn);
         } else {
           // show history cumulative
-          this.getHistoryCumulative();
+          this.getHistoryCumulative(perMillionOn);
         }
       } else {
         // new cases
-        this.newCases();
+        this.newCases(perMillionOn);
       }
     }
+    this.renderUS();
+    this.renderStates();
   }
 
   handleMapClick(e) {
@@ -515,10 +524,19 @@ class Covid19Map extends Component {
     }
   }
 
-  getRadius(value) {
+  getRadius(value, population, perMillion) {
+    //console.log("getPop: " + population);
+
     if (value === 0)
       return value;
-  	var radius = Math.log(value / 100);
+
+    if(perMillion){
+      var radius = 1000000*(value)/population;
+      radius = Math.log(radius / 100);
+    }
+    else{
+      var radius = Math.log(value / 100);
+    }
 
   	if (radius < 0.5)
   		radius = 0.5;
@@ -526,8 +544,12 @@ class Covid19Map extends Component {
   	return radius;
   }
 
-  getColor(d) {
+  getColor(d, population, toggle) {
+    if(toggle){
+      d = 10000000*(d)/population; // multiplied by 10 million so colors will vary more
+    }
     d /= 10000;
+
    	return d > 100 ? '#800026' :
            d > 50  ? '#BD0026' :
            d > 25  ? '#E31A1C' :

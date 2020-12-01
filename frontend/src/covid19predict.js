@@ -47,7 +47,7 @@ class Covid19Predict extends PureComponent {
     this.setState({
       statistic: e.target.value
     }, () => {
-      this.map.fetchData(this.state.dynamicMapOn);
+      this.map.fetchData(this.state.dynamicMapOn, this.state.perMillionOn);
     })
   };
 
@@ -64,7 +64,7 @@ class Covid19Predict extends PureComponent {
     this.setState({
       mapShown: e.target.value
     }, ()=>{
-      this.map.fetchData(this.state.dynamicMapOn);
+      this.map.fetchData(this.state.dynamicMapOn, this.state.perMillionOn);
     })
   }
 
@@ -83,6 +83,7 @@ class Covid19Predict extends PureComponent {
       mainGraphData: {},
       days: 14,
       dynamicMapOn: true,
+      perMillionOn: false,
       dataType: ["confirmed"],
       statistic: "cumulative",
       mapShown: "confirmed",
@@ -101,6 +102,7 @@ class Covid19Predict extends PureComponent {
     this.onMapClick = this.onMapClick.bind(this);
     this.onDaysToPredictChange = this.onDaysToPredictChange.bind(this);
     this.switchDynamicMap = this.switchDynamicMap.bind(this);
+    this.switchPerMillion = this.switchPerMillion.bind(this);
     this.onAlertClose = this.onAlertClose.bind(this);
     this.onNoData = this.onNoData.bind(this);
     this.generateMarks = this.generateMarks.bind(this);
@@ -345,7 +347,10 @@ class Covid19Predict extends PureComponent {
         // TODO: Add code for stuff after reload here!
         // Force reload the heatmap, only refetch data when dynamic map is on
         if (this.state.dynamicMapOn && this.state.models.length !== 0) {
-          this.map.fetchData(this.state.dynamicMapOn);
+          this.map.fetchData(this.state.dynamicMapOn, this.state.perMillionOn);
+        }
+        if(this.state.perMillion && this.state.models.length !== 0) {
+          this.map.fetchData(this.state.dynamicMapOn, this.state.perMillionOn);
         }
 
       }
@@ -356,7 +361,14 @@ class Covid19Predict extends PureComponent {
     this.setState({
       dynamicMapOn: checked
     });
-    this.map.fetchData(checked);
+    this.map.fetchData(checked, this.state.perMillionOn);
+  }
+
+  switchPerMillion(checked) {
+    this.setState({
+      perMillionOn: checked
+    });
+    this.map.fetchData(this.state.dynamicMapOn, checked);
   }
 
   //when closing the alert
@@ -433,6 +445,7 @@ class Covid19Predict extends PureComponent {
       days,
       mainGraphData,
       dynamicMapOn,
+      perMillionOn,
       dataType,
       statistic,
       mapShown,
@@ -440,6 +453,7 @@ class Covid19Predict extends PureComponent {
       noDataError,
       errorDescription
     } = this.state;
+    console.log(mainGraphData); // contains observed array w/ all the dates, observed_deaths array, and predictions
     const marks = this.generateMarks();
     const daysToFirstDate = this.getDaysToFirstDate();
     // Only show options for countries that have not been selected yet.
@@ -530,6 +544,12 @@ class Covid19Predict extends PureComponent {
       radioGroup: (
         <p className="instruction vertical">
           Switch between cumulative infection view or death view on the heatmap.
+        </p>
+      ),
+
+      perMillion: (
+        <p className="instruction vertical">
+          Enable to toggle normalized cases/deaths per million of each country based on their population.
         </p>
       )
     };
@@ -766,6 +786,13 @@ class Covid19Predict extends PureComponent {
                     <Switch defaultChecked onChange={this.switchDynamicMap} />
                     <b>&nbsp;&nbsp;Dynamic Map&nbsp;&nbsp;</b>
                   </Popover>
+                  <Popover
+                    content={MAP_INSTRUCTION.perMillion}
+                    placement="bottom"
+                    visible={this.state.showMapInstructions}>
+                    <Switch onChange={this.switchPerMillion} />
+                    <b>&nbsp;&nbsp;Normalize cases/deaths per million&nbsp;&nbsp;</b>
+                  </Popover>
                 </span>
               </Row>
 
@@ -775,6 +802,7 @@ class Covid19Predict extends PureComponent {
                 <Covid19Map className="map"
                   triggerRef={this.bindRef}
                   dynamicMapOn={dynamicMapOn}
+                  perMillionOn={perMillionOn}
                   days={days}
                   confirmed_model = {confirmed_model_map}
                   death_model = {death_model_map}
